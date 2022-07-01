@@ -59,7 +59,7 @@ export default {
   methods:{
     toSearch(){
       // 搜索按钮的回调函数：需要向Search路由进行跳转
-      this.$router.push({
+      this.$router.replace({
         name:'Search',
         query:{
           keyWord:this.keyWord
