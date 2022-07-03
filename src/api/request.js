@@ -6,7 +6,7 @@ import nprogress from 'nprogress';
 import 'nprogress/nprogress.css'
 
 // 1.利用axios对象的方法create，去创建一个axios的实例
-export default axios.create({
+const requests = axios.create({
   // 配置对象
   // 基础路径，发请求的时候，路径当中会出现api
   baseURL:"/api",
@@ -32,3 +32,5 @@ requests.interceptors.response.use((res)=>{
   // 相应失败的回调函数
   return Promise.reject(new Error('faile'))
 })
+
+export default requests
