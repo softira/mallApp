@@ -16,7 +16,7 @@
               <h3>
                 <a href="">{{ category1.categoryName }}</a>
               </h3>
-              <div class="item-list clearfix">
+              <div class="item-list clearfix" :style="{display: actCategory === category1.categoryId ? 'block' : 'none'}">
                 <div
                   class="subitem"
                   v-for="category2 in category1.categoryChild"
@@ -198,11 +198,6 @@ export default {
             }
           }
 
-          &:hover {
-            .item-list {
-              display: block;
-            }
-          }
         }
         .actBg {
           background: lightblue;
