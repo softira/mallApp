@@ -1,7 +1,7 @@
 <template>
   <div>
+    <TypeNav></TypeNav>
     <h1>Search组件</h1>
-    <p>{{$route.query.keyWord}}</p>
   </div>
 </template>
 

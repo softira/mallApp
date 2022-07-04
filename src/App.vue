@@ -8,16 +8,20 @@
 </template>
 
 <script>
-  import Headers from "./components/Header";
-  import Footers from "./components/Footer";
+import Headers from "./components/Header";
+import Footers from "./components/Footer";
 
-  export default {
-    name: "App",
-    components: {
-      Headers,
-      Footers
-    },
-  };
+export default {
+  name: "App",
+  components: {
+    Headers,
+    Footers,
+  },
+  mounted() {
+    // 组件挂载完毕，向服务器发送请求，获取数据存储在仓库中
+    this.$store.dispatch("getCategoryList");
+  },
+};
 </script>
 
 <style>

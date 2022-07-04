@@ -2,44 +2,64 @@
   <!-- 商品分类导航 -->
   <div class="type-nav">
     <div class="container">
-      <div @mouseleave="rawBg">
+      <div @mouseleave="leaveShow" @mouseenter="enterShow">
         <h2 class="all">全部商品分类</h2>
-        <div class="sort">
-          <div class="all-sort-list2">
-            <div
-              class="item"
-              v-for="category1 in categoryList"
-              :key="category1.categoryId"
-              @mouseenter="changeBg(category1.categoryId)"
-              :class="{ actBg: actCategory === category1.categoryId }"
-            >
-              <h3>
-                <a href="">{{ category1.categoryName }}</a>
-              </h3>
-              <div class="item-list clearfix" :style="{display: actCategory === category1.categoryId ? 'block' : 'none'}">
+        <transition name="sort">
+          <div class="sort" v-show="isShow">
+            <div class="all-sort-list2" @click="goSearch($event)">
+              <div
+                class="item"
+                v-for="category1 in categoryList"
+                :key="category1.categoryId"
+                @mouseenter="changeBg(category1.categoryId)"
+                :class="{ actBg: actCategory === category1.categoryId }"
+              >
+                <h3>
+                  <a
+                    :data-categoryName="category1.categoryName"
+                    :data-category1Id="category1.categoryId"
+                    >{{ category1.categoryName }}</a
+                  >
+                </h3>
                 <div
-                  class="subitem"
-                  v-for="category2 in category1.categoryChild"
-                  :key="category2.categoryId"
+                  class="item-list clearfix"
+                  :style="{
+                    display:
+                      actCategory === category1.categoryId ? 'block' : 'none',
+                  }"
                 >
-                  <dl class="fore">
-                    <dt>
-                      <a href="">{{ category2.categoryName }}</a>
-                    </dt>
-                    <dd>
-                      <em
-                        v-for="category3 in category2.categoryChild"
-                        :key="category3.categoryId"
-                      >
-                        <a href="">{{ category3.categoryName }}</a>
-                      </em>
-                    </dd>
-                  </dl>
+                  <div
+                    class="subitem"
+                    v-for="category2 in category1.categoryChild"
+                    :key="category2.categoryId"
+                  >
+                    <dl class="fore">
+                      <dt>
+                        <a
+                          :data-categoryName="category2.categoryName"
+                          :data-category2Id="category2.categoryId"
+                          >{{ category2.categoryName }}</a
+                        >
+                      </dt>
+                      <dd>
+                        <em
+                          v-for="category3 in category2.categoryChild"
+                          :key="category3.categoryId"
+                        >
+                          <a
+                            :data-categoryName="category3.categoryName"
+                            :data-category3Id="category3.categoryId"
+                            >{{ category3.categoryName }}</a
+                          >
+                        </em>
+                      </dd>
+                    </dl>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </transition>
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -57,12 +77,14 @@
 
 <script>
 import { mapState } from "vuex";
+import throttle from "lodash/throttle";
 
 export default {
   name: "TypeNav",
   data() {
     return {
       actCategory: -1,
+      isShow: true,
     };
   },
   computed: {
@@ -73,17 +95,44 @@ export default {
   },
   methods: {
     // 鼠标在那个元素上的id值
-    changeBg(index) {
+    changeBg: throttle(function (index) {
       this.actCategory = index;
-    },
-    // 鼠标移开三级导航，初始化actCategory值
-    rawBg() {
+    }, 16),
+    // 鼠标移开三级导航，初始化actCategory值,并判断是否隐藏
+    leaveShow() {
       this.actCategory = -1;
+      if (this.$route.name !== "Home") {
+        this.isShow = false;
+      }
+    },
+    enterShow() {
+      this.isShow = true;
+    },
+    // 点击a标签，往search页面调整，并传递参数
+    goSearch(e) {
+      let data = e.target.dataset;
+      if (data.categoryname) {
+        let local = { categoryname: data.categoryname };
+        let { category1id, category2id, category3id } = data;
+        if (category1id) {
+          local.category1Id = category1id;
+        } else if (category2id) {
+          local.category2Id = category2id;
+        } else {
+          local.category3Id = category3id;
+        }
+        this.$router.push({
+          name: "Search",
+          query: { ...local },
+        });
+      }
     },
   },
   mounted() {
-    // 组件挂载完毕，向服务器发送请求，获取数据存储在仓库中
-    this.$store.dispatch("getCategoryList");
+    // 当挂载完毕，检查所在路由，决定是否隐藏
+    if (this.$route.name !== "Home") {
+      this.isShow = false;
+    }
   },
 };
 </script>
@@ -197,12 +246,24 @@ export default {
               }
             }
           }
-
         }
         .actBg {
           background: lightblue;
         }
       }
+    }
+
+    // 过度动画样式
+    .sort-enter {
+      height: 0;
+    }
+
+    .sort-enter-to {
+      height: 461px;
+    }
+
+    .sort-enter-active {
+      transition: all 0.2s;
     }
   }
 }
