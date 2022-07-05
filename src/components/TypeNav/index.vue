@@ -112,19 +112,19 @@ export default {
     goSearch(e) {
       let data = e.target.dataset;
       if (data.categoryname) {
-        let local = { categoryname: data.categoryname };
+        let local = { name: "Search" };
+        local.query = { categoryname: data.categoryname };
         let { category1id, category2id, category3id } = data;
         if (category1id) {
-          local.category1Id = category1id;
+          local.query.category1Id = category1id;
         } else if (category2id) {
-          local.category2Id = category2id;
+          local.query.category2Id = category2id;
         } else {
-          local.category3Id = category3id;
+          local.query.category3Id = category3id;
         }
-        this.$router.push({
-          name: "Search",
-          query: { ...local },
-        });
+        // 判断是否带有params参数
+        if (this.$route.params) local.params = this.$route.params;
+        this.$router.push(local);
       }
     },
   },

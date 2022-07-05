@@ -8,7 +8,6 @@
 <script>
 export default {
   name:'Search',
-  props:['keyWord']
 }
 </script>
 

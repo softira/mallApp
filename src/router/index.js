@@ -32,7 +32,7 @@ export default new VueRouter({
     },
     {
       name: 'Search',
-      path:'/Search/',
+      path:'/Search/:keyWord',
       component:Search,
       meta:{
         footerShow:true

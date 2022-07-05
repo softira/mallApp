@@ -39,7 +39,11 @@
             class="input-error input-xxlarge"
             v-model="keyWord"
           />
-          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="toSearch">
+          <button
+            class="sui-btn btn-xlarge btn-danger"
+            type="button"
+            @click="toSearch"
+          >
             搜索
           </button>
         </form>
@@ -50,23 +54,28 @@
 
 <script>
 export default {
-  name:'Header',
-  data(){
+  name: "Header",
+  data() {
     return {
-      keyWord:''
-    }
+      keyWord: "",
+    };
   },
-  methods:{
-    toSearch(){
+  methods: {
+    toSearch() {
       // 搜索按钮的回调函数：需要向Search路由进行跳转
-      this.$router.replace({
-        name:'Search',
-        query:{
-          keyWord:this.keyWord
-        }
-      })
-    }
-  }
+      let local = {
+        name: "Search",
+        params: {
+          keyWord: this.keyWord,
+        },
+      };
+      // 判断是否带有query参数
+      if (this.$route.query) {
+        local.query = this.$route.query;
+      }
+      this.$router.push(local);
+    },
+  },
 };
 </script>
 
