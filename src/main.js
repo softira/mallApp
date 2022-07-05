@@ -13,6 +13,11 @@ import router from './router'
 // 引入仓库
 import store from './store'
 
+// 引入MockServer.js
+import './mock/mockServe';
+// 引入swiper样式
+import 'swiper/css/swiper.css'
+
 new Vue({
   render: h => h(App),
   // 配置路由
