@@ -4,17 +4,14 @@
     <div class="main">
       <div class="py-container">
         <!--bread-->
-        <div class="bread">
+        <div class="bread" v-if="searchParams.categoryname">
           <ul class="fl sui-breadcrumb">
             <li>
               <a href="#">全部结果</a>
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x">{{searchParams.categoryname}}</li>
           </ul>
         </div>
 
@@ -121,7 +118,7 @@
 </template>
 
 <script>
-import router from '@/router';
+import router from "@/router";
 import { mapGetters } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
@@ -164,12 +161,20 @@ export default {
       this.$store.dispatch("getSearchList", this.searchParams);
     },
   },
-  beforeMount(){
-    // {...this.searchParams} = {...this.$route.query,...this.$route.params};
-    console.log();
+  watch: {
+    $route() {
+      this.searchParams.category1Id = "";
+      this.searchParams.category2Id = "";
+      this.searchParams.category3Id = "";
+      Object.assign(this.searchParams, this.$route.query, this.$route.params);
+      this.getSearchData();
+    },
+  },
+  beforeMount() {
+    Object.assign(this.searchParams, this.$route.query, this.$route.params);
   },
   mounted() {
-    this.getSearchData()
+    this.getSearchData();
   },
 };
 </script>
