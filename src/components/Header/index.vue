@@ -32,12 +32,11 @@
         </router-link>
       </h1>
       <div class="searchArea">
-        <form action="###" class="searchForm">
+        <form class="searchForm">
+          <input type="text" style="display: none">
           <input
-            type="text"
-            id="autocomplete"
-            class="input-error input-xxlarge"
             v-model="keyWord"
+            @keyup.enter="toSearch"
           />
           <button
             class="sui-btn btn-xlarge btn-danger"
@@ -66,7 +65,7 @@ export default {
       let local = {
         name: "Search",
         params: {
-          keyWord: this.keyWord,
+          keyword: this.keyWord,
         },
       };
       // 判断是否带有query参数
@@ -74,7 +73,16 @@ export default {
         local.query = this.$route.query;
       }
       this.$router.push(local);
+      console.log(1);
     },
+  },
+  mounted(){
+    this.$bus.$on('clear',()=>{
+      this.keyWord = undefined
+    })
+  },
+  beforeDestroy() {
+    this.$bus.$off(['clear'])
   },
 };
 </script>

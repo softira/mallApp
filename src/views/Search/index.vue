@@ -4,7 +4,10 @@
     <div class="main">
       <div class="py-container">
         <!--bread-->
-        <div class="bread" v-if="searchParams.categoryName || searchParams.keyWord">
+        <div
+          class="bread"
+          v-if="searchParams.categoryName || searchParams.keyword"
+        >
           <ul class="fl sui-breadcrumb">
             <li>
               <a href="#">全部结果</a>
@@ -15,9 +18,8 @@
               {{ searchParams.categoryName
               }}<i @click="removeCategoryName">x</i>
             </li>
-            <li class="with-x" v-if="searchParams.keyWord">
-              {{ searchParams.keyWord
-              }}<i @click="removeKeyWord">x</i>
+            <li class="with-x" v-if="searchParams.keyword">
+              {{ searchParams.keyword }}<i @click="removeKeyWord">x</i>
             </li>
           </ul>
         </div>
@@ -67,9 +69,12 @@
                     </strong>
                   </div>
                   <div class="attr">
-                    <a target="_blank" href="item.html" :title="goods.title">{{
-                      goods.title
-                    }}</a>
+                    <a
+                      target="_blank"
+                      href="item.html"
+                      :title="goods.title"
+                      v-html="goods.title"
+                    ></a>
                   </div>
                   <div class="commit">
                     <i class="command">已有<span>2000</span>人评价</i>
@@ -144,7 +149,7 @@ export default {
         // 分类名字
         categoryName: "",
         // 关键字
-        keyWord: "",
+        keyword: "",
         // 排序
         order: "",
         // 分页器：当前页数
@@ -167,21 +172,18 @@ export default {
       this.$store.dispatch("getSearchList", this.searchParams);
     },
     // 删除分类
-    removeCategoryName(){
+    removeCategoryName() {
       this.$router.push({
-        name:'Search',
-        query:{}
-      })
-      this.searchParams.categoryName = undefined
+        name: "Search",
+        query: {},
+      });
+      this.searchParams.categoryName = undefined;
     },
     // 删除关键字
-    removeKeyWord(){
-      this.$router.push({
-        name:'Search',
-        params:{}
-      })
-      this.searchParams.keyWord = undefined
-    }
+    removeKeyWord() {
+      this.$bus.$emit("clear");
+      // this.searchParams.keyword = undefined;
+    },
   },
   watch: {
     $route() {
