@@ -113,7 +113,7 @@ export default {
       let data = e.target.dataset;
       if (data.categoryname) {
         let local = { name: "Search" };
-        local.query = { categoryname: data.categoryname };
+        local.query = { categoryName: data.categoryname };
         let { category1id, category2id, category3id } = data;
         if (category1id) {
           local.query.category1Id = category1id;

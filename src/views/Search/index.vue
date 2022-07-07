@@ -4,14 +4,21 @@
     <div class="main">
       <div class="py-container">
         <!--bread-->
-        <div class="bread" v-if="searchParams.categoryname">
+        <div class="bread" v-if="searchParams.categoryName || searchParams.keyWord">
           <ul class="fl sui-breadcrumb">
             <li>
               <a href="#">全部结果</a>
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">{{searchParams.categoryname}}</li>
+            <li class="with-x" v-if="searchParams.categoryName">
+              {{ searchParams.categoryName
+              }}<i @click="removeCategoryName">x</i>
+            </li>
+            <li class="with-x" v-if="searchParams.keyWord">
+              {{ searchParams.keyWord
+              }}<i @click="removeKeyWord">x</i>
+            </li>
           </ul>
         </div>
 
@@ -118,7 +125,6 @@
 </template>
 
 <script>
-import router from "@/router";
 import { mapGetters } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
@@ -138,7 +144,7 @@ export default {
         // 分类名字
         categoryName: "",
         // 关键字
-        keyword: "",
+        keyWord: "",
         // 排序
         order: "",
         // 分页器：当前页数
@@ -160,12 +166,28 @@ export default {
     getSearchData() {
       this.$store.dispatch("getSearchList", this.searchParams);
     },
+    // 删除分类
+    removeCategoryName(){
+      this.$router.push({
+        name:'Search',
+        query:{}
+      })
+      this.searchParams.categoryName = undefined
+    },
+    // 删除关键字
+    removeKeyWord(){
+      this.$router.push({
+        name:'Search',
+        params:{}
+      })
+      this.searchParams.keyWord = undefined
+    }
   },
   watch: {
     $route() {
-      this.searchParams.category1Id = "";
-      this.searchParams.category2Id = "";
-      this.searchParams.category3Id = "";
+      this.searchParams.category1Id = undefined;
+      this.searchParams.category2Id = undefined;
+      this.searchParams.category3Id = undefined;
       Object.assign(this.searchParams, this.$route.query, this.$route.params);
       this.getSearchData();
     },
