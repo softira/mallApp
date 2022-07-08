@@ -4,7 +4,7 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li v-for="trademark in trademarkList" :key="trademark.tmId">
+          <li v-for="trademark in trademarkList" :key="trademark.tmId" @click="sendTrademark(trademark)">
             {{ trademark.tmName }}
           </li>
         </ul>
@@ -36,6 +36,12 @@ export default {
   computed: {
     ...mapGetters(["attrsList", "trademarkList"]),
   },
+  methods: {
+    // 点击品牌，想search组件传输数据
+    sendTrademark(val){
+      this.$bus.$emit('getTrademark',val)
+    }
+  }
 };
 </script>
 

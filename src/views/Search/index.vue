@@ -21,6 +21,9 @@
             <li class="with-x" v-if="searchParams.keyword">
               {{ searchParams.keyword }}<i @click="removeKeyWord">x</i>
             </li>
+            <li class="with-x" v-if="searchParams.trademark">
+              {{ searchParams.trademark.split(":")[1] }}<i @click="removeTrademark">x</i>
+            </li>
           </ul>
         </div>
 
@@ -182,7 +185,14 @@ export default {
     // 删除关键字
     removeKeyWord() {
       this.$bus.$emit("clear");
-      // this.searchParams.keyword = undefined;
+      this.searchParams.keyword = undefined;
+      this.getSearchData();
+      this.$router.push({name:'Search'});
+    },
+    // 删除品牌
+    removeTrademark() {
+      this.searchParams.trademark = undefined;
+      this.getSearchData();
     },
   },
   watch: {
@@ -199,7 +209,14 @@ export default {
   },
   mounted() {
     this.getSearchData();
+    this.$bus.$on('getTrademark',(val)=>{
+      this.searchParams.trademark = `${val.tmId}:${val.tmName}`
+      this.getSearchData();
+    })
   },
+  beforeDestroy() {
+    this.$bus.$off(['getTrademark'])
+  }
 };
 </script>
 

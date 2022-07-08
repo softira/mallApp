@@ -73,12 +73,12 @@ export default {
         local.query = this.$route.query;
       }
       this.$router.push(local);
-      console.log(1);
     },
   },
   mounted(){
     this.$bus.$on('clear',()=>{
       this.keyWord = undefined
+      this.toSearch()
     })
   },
   beforeDestroy() {
