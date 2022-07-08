@@ -4,10 +4,7 @@
     <div class="main">
       <div class="py-container">
         <!--bread-->
-        <div
-          class="bread"
-          v-if="searchParams.categoryName || searchParams.keyword"
-        >
+        <div class="bread">
           <ul class="fl sui-breadcrumb">
             <li>
               <a href="#">全部结果</a>
@@ -22,7 +19,15 @@
               {{ searchParams.keyword }}<i @click="removeKeyWord">x</i>
             </li>
             <li class="with-x" v-if="searchParams.trademark">
-              {{ searchParams.trademark.split(":")[1] }}<i @click="removeTrademark">x</i>
+              {{ searchParams.trademark.split(":")[1]
+              }}<i @click="removeTrademark">x</i>
+            </li>
+            <li
+              class="with-x"
+              v-for="prop in searchParams.props"
+              :key="prop.index"
+            >
+              {{ prop.split(":")[1] }}<i @click="removeProp(prop.index)">x</i>
             </li>
           </ul>
         </div>
@@ -179,6 +184,7 @@ export default {
       this.$router.push({
         name: "Search",
         query: {},
+        params: this.$route.params,
       });
       this.searchParams.categoryName = undefined;
     },
@@ -187,12 +193,22 @@ export default {
       this.$bus.$emit("clear");
       this.searchParams.keyword = undefined;
       this.getSearchData();
-      this.$router.push({name:'Search'});
+      this.$router.push({
+        name: "Search",
+        params: {},
+        query: this.$route.query,
+      });
     },
     // 删除品牌
     removeTrademark() {
       this.searchParams.trademark = undefined;
       this.getSearchData();
+    },
+    // 删除属性
+    removeProp(index) {
+      console.log(index);
+      // this.searchParams.props.splice(index+1,1);
+      // this.getSearchData();
     },
   },
   watch: {
@@ -209,14 +225,23 @@ export default {
   },
   mounted() {
     this.getSearchData();
-    this.$bus.$on('getTrademark',(val)=>{
-      this.searchParams.trademark = `${val.tmId}:${val.tmName}`
+    // 接收品牌数据
+    this.$bus.$on("getTrademark", (val) => {
+      this.searchParams.trademark = `${val.tmId}:${val.tmName}`;
       this.getSearchData();
-    })
+    });
+    // 接收属性数据
+    this.$bus.$on("getAttr", (attr, attrValue) => {
+      let prop = `${attr.attrId}:${attrValue}:${attr.attrName}`;
+      if (this.searchParams.props.indexOf(prop) === -1) {
+        this.searchParams.props.push(prop);
+        this.getSearchData();
+      }
+    });
   },
   beforeDestroy() {
-    this.$bus.$off(['getTrademark'])
-  }
+    this.$bus.$off(["getTrademark", "getAttr"]);
+  },
 };
 </script>
 

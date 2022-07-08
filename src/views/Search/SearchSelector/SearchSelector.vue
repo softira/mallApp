@@ -19,7 +19,7 @@
       <div class="fl value">
         <ul class="type-list">
           <li v-for="attrValue in attr.attrValueList" :key="attrValue.index">
-            <a>{{attrValue}}</a>
+            <a @click="sendAttr(attr,attrValue)">{{attrValue}}</a>
           </li>
         </ul>
       </div>
@@ -37,9 +37,13 @@ export default {
     ...mapGetters(["attrsList", "trademarkList"]),
   },
   methods: {
-    // 点击品牌，想search组件传输数据
+    // 点击品牌，向search组件传输数据
     sendTrademark(val){
       this.$bus.$emit('getTrademark',val)
+    },
+    // 点击属性，向search组件传输数据
+    sendAttr(attr,attrValue){
+      this.$bus.$emit('getAttr',attr,attrValue)
     }
   }
 };

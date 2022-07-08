@@ -32,11 +32,11 @@ export default new VueRouter({
     },
     {
       name: 'Search',
-      path:'/Search/:keyword',
+      path:'/Search/:keyword?',
       component:Search,
       meta:{
         footerShow:true
-      }
+      },
     },
     {
       name: 'Login',
