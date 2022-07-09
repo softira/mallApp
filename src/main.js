@@ -8,6 +8,9 @@ Vue.component(TypeNav.name, TypeNav)
 // 轮播组件
 import Carousel from './components/Carousel'
 Vue.component(Carousel.name, Carousel)
+// 分页器组件
+import Paginaton from './components/Pagination'
+Vue.component(Paginaton.name, Paginaton)
 
 // 关闭生产提示
 Vue.config.productionTip = false
@@ -28,7 +31,7 @@ new Vue({
   router,
   // 注册仓库
   store,
-  beforeCreate(){
+  beforeCreate() {
     Vue.prototype.$bus = this // 安装全局事件总线
   }
 }).$mount('#app')

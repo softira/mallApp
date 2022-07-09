@@ -24,10 +24,10 @@
             </li>
             <li
               class="with-x"
-              v-for="prop in searchParams.props"
-              :key="prop.index"
+              v-for="(prop, index) in searchParams.props"
+              :key="index"
             >
-              {{ prop.split(":")[1] }}<i @click="removeProp(prop.index)">x</i>
+              {{ prop.split(":")[1] }}<i @click="removeProp(index)">x</i>
             </li>
           </ul>
         </div>
@@ -40,23 +40,11 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{ active: isOne }" @click="changeOrder('1')">
+                  <a>综合 <span :class="{ up: isUp }" >↓</span></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{ active: isTwo }" @click="changeOrder('2')">
+                  <a>价格 <span :class="{ up: isUp }" >↓</span></a>
                 </li>
               </ul>
             </div>
@@ -102,35 +90,8 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <!-- 分页器 -->
+          <Pagination :pageSize="searchParams.pageSize" :total="91" :pageOn="8" :continue="5"></Pagination>
         </div>
       </div>
     </div>
@@ -159,7 +120,7 @@ export default {
         // 关键字
         keyword: "",
         // 排序
-        order: "",
+        order: "1:desc",
         // 分页器：当前页数
         pageNo: 1,
         // 每页展示最大个数
@@ -173,6 +134,16 @@ export default {
   },
   computed: {
     ...mapGetters(["goodsList"]),
+    // 是否为综合排序
+    isOne() {
+      return this.searchParams.order.indexOf("1") != -1;
+    },
+    isTwo() {
+      return this.searchParams.order.indexOf("2") != -1;
+    },
+    isUp() {
+      return this.searchParams.order.indexOf("asc") != -1;
+    },
   },
   methods: {
     // 向服务器发送请求，获取search组件数据
@@ -207,9 +178,22 @@ export default {
     // 删除属性
     removeProp(index) {
       console.log(index);
-      // this.searchParams.props.splice(index+1,1);
-      // this.getSearchData();
+      this.searchParams.props.splice(index, 1);
+      this.getSearchData();
     },
+    // 改变排序
+    changeOrder(flag){
+      let originFlag = this.searchParams.order.split(':')[0],
+        originSortType = this.searchParams.order.split(':')[1],
+        sortType = ''
+      if(flag === originFlag){
+        sortType = originSortType === 'desc' ? 'asc' : 'desc'
+        this.searchParams.order = `${flag}:${sortType}`
+      } else {
+        this.searchParams.order = `${flag}:desc`
+      }
+      this.getSearchData()
+    }
   },
   watch: {
     $route() {
@@ -352,12 +336,23 @@ export default {
                 padding: 11px 15px;
                 color: #777;
                 text-decoration: none;
+
+                span {
+                  display: none;
+                  &.up {
+                    transform: rotate(180deg);
+                  }
+                }
               }
 
               &.active {
                 a {
                   background: #e1251b;
                   color: #fff;
+
+                  span {
+                    display: inline-block;
+                  }
                 }
               }
             }
