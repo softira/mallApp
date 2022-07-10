@@ -27,3 +27,9 @@ export const reqSearchList = (pramas) => requests({
   method: 'post',
   data: pramas
 })
+
+// 获取Detail数据
+export const reqDetailList = (skuId) => requests({
+  url: `/item/${skuId}`,
+  method: 'get',
+})

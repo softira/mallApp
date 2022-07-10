@@ -41,10 +41,10 @@
             <div class="navbar-inner filter">
               <ul class="sui-nav">
                 <li :class="{ active: isOne }" @click="changeOrder('1')">
-                  <a>综合 <span :class="{ up: isUp }" >↓</span></a>
+                  <a>综合 <span :class="{ up: isUp }">↓</span></a>
                 </li>
                 <li :class="{ active: isTwo }" @click="changeOrder('2')">
-                  <a>价格 <span :class="{ up: isUp }" >↓</span></a>
+                  <a>价格 <span :class="{ up: isUp }">↓</span></a>
                 </li>
               </ul>
             </div>
@@ -54,9 +54,9 @@
               <li class="yui3-u-1-5" v-for="goods in goodsList" :key="goods.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"
+                    <router-link :to="`/Detail/${goods.id}`"
                       ><img :src="goods.defaultImg"
-                    /></a>
+                    /></router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -65,12 +65,11 @@
                     </strong>
                   </div>
                   <div class="attr">
-                    <a
-                      target="_blank"
-                      href="item.html"
+                    <router-link
+                      :to="`/Detail/${goods.id}`"
                       :title="goods.title"
                       v-html="goods.title"
-                    ></a>
+                    ></router-link>
                   </div>
                   <div class="commit">
                     <i class="command">已有<span>2000</span>人评价</i>
@@ -91,7 +90,12 @@
             </ul>
           </div>
           <!-- 分页器 -->
-          <Pagination :pageSize="searchParams.pageSize" :total="91" :pageOn="8" :continue="5"></Pagination>
+          <Pagination
+            :pageSize="searchParams.pageSize"
+            :total="total"
+            :pageOn="searchParams.pageNo"
+            :continues="5"
+          ></Pagination>
         </div>
       </div>
     </div>
@@ -99,7 +103,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
   name: "Search",
@@ -144,6 +148,10 @@ export default {
     isUp() {
       return this.searchParams.order.indexOf("asc") != -1;
     },
+    // 获取商品总数
+    ...mapState({
+      total: (state) => state.Search.searchList.total,
+    }),
   },
   methods: {
     // 向服务器发送请求，获取search组件数据
@@ -182,18 +190,18 @@ export default {
       this.getSearchData();
     },
     // 改变排序
-    changeOrder(flag){
-      let originFlag = this.searchParams.order.split(':')[0],
-        originSortType = this.searchParams.order.split(':')[1],
-        sortType = ''
-      if(flag === originFlag){
-        sortType = originSortType === 'desc' ? 'asc' : 'desc'
-        this.searchParams.order = `${flag}:${sortType}`
+    changeOrder(flag) {
+      let originFlag = this.searchParams.order.split(":")[0],
+        originSortType = this.searchParams.order.split(":")[1],
+        sortType = "";
+      if (flag === originFlag) {
+        sortType = originSortType === "desc" ? "asc" : "desc";
+        this.searchParams.order = `${flag}:${sortType}`;
       } else {
-        this.searchParams.order = `${flag}:desc`
+        this.searchParams.order = `${flag}:desc`;
       }
-      this.getSearchData()
-    }
+      this.getSearchData();
+    },
   },
   watch: {
     $route() {
@@ -222,9 +230,14 @@ export default {
         this.getSearchData();
       }
     });
+    // 改变当前页
+    this.$bus.$on("getPageOn", (page) => {
+      this.searchParams.pageNo = page;
+      this.getSearchData();
+    });
   },
   beforeDestroy() {
-    this.$bus.$off(["getTrademark", "getAttr"]);
+    this.$bus.$off(["getTrademark", "getAttr", "getPageOn"]);
   },
 };
 </script>

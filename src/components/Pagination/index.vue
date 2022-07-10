@@ -1,15 +1,43 @@
 <template>
   <div class="pagination">
     <h1></h1>
-    <button>上一页</button>
-    <button>1</button>
-    <button v-show="startPage > 2">.....</button>
-    <button>{{startPage}}</button>
-    <button>{{endPage}}</button>
-    <button v-show="endPage < totalPage - 1">......</button>
-    <button>{{ totalPage }}</button>
+    <button
+      :disabled="pageOn == 1"
+      @click="$bus.$emit('getPageOn', pageOn - 1)"
+    >
+      上一页
+    </button>
+    <button
+      v-show="startAndEnd.startPage != 1"
+      @click="$bus.$emit('getPageOn', 1)"
+    >
+      1
+    </button>
+    <button v-show="startAndEnd.startPage > 2">.....</button>
+    <button
+      :disabled="pageOn == page"
+      :class="{active:pageOn == page}"
+      v-for="(page, index) in startAndEnd.endPage"
+      :key="index"
+      v-if="page >= startAndEnd.startPage"
+      @click="$bus.$emit('getPageOn', page)"
+    >
+      {{ page }}
+    </button>
+    <button v-show="startAndEnd.endPage < totalPage - 1">......</button>
+    <button
+      v-show="startAndEnd.endPage != totalPage"
+      @click="$bus.$emit('getPageOn', startAndEnd.endPage)"
+    >
+      {{ totalPage }}
+    </button>
 
-    <button>下一页</button>
+    <button
+      :disabled="pageOn == startAndEnd.endPage"
+      @click="$bus.$emit('getPageOn', pageOn + 1)"
+    >
+      下一页
+    </button>
 
     <button>共 {{ total }} 条</button>
   </div>
@@ -18,20 +46,33 @@
 <script>
 export default {
   name: "Pagination",
-  props: ["pageSize", "pageOn", "total", "continue"],
+  props: ["pageSize", "pageOn", "total", "continues"],
   computed: {
     totalPage() {
       return Math.ceil(this.total / this.pageSize);
     },
-    startPage() {
-      return this.pageOn - Math.floor(this.continue / 2) > 1
-        ? this.pageOn - Math.floor(this.continue / 2)
-        : 1;
-    },
-    endPage() {
-      return this.pageOn + Math.floor(this.continue / 2) < this.totalPage
-        ? this.pageOn + Math.floor(this.continue / 2)
-        : this.totalPage;
+    startAndEnd() {
+      const { continues, pageOn, totalPage } = this;
+      let startPage = 0,
+        endPage = 0;
+      if (continues > totalPage) {
+        startPage = 1;
+        endPage = totalPage;
+      } else {
+        startPage = pageOn - Math.floor(continues / 2);
+        endPage = pageOn + Math.floor(continues / 2);
+        if (startPage < 1) {
+          startPage = 1;
+          endPage = continues;
+        }
+        if (endPage > totalPage) {
+          (endPage = totalPage), (startPage = totalPage - continues + 1);
+        }
+      }
+      return {
+        startPage,
+        endPage,
+      };
     },
   },
 };
