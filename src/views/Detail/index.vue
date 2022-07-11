@@ -87,7 +87,7 @@
                   :class="{ active: attrItem.isChecked == 1 }"
                   v-for="attrItem in attr.spuSaleAttrValueList"
                   :key="attrItem.id"
-                  @click="changeActive(attrItem,attr.spuSaleAttrValueList)"
+                  @click="changeActive(attrItem, attr.spuSaleAttrValueList)"
                 >
                   {{ attrItem.saleAttrValueName }}
                 </dd>
@@ -95,12 +95,22 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input
+                  autocomplete="off"
+                  class="itxt"
+                  v-model="skuNum"
+                  @change="changeSkuNum"
+                />
+                <a href="javascript:" class="plus" @click="skuNum++">+</a>
+                <a
+                  href="javascript:"
+                  class="mins"
+                  @click="skuNum > 1 ? skuNum-- : 0"
+                  >-</a
+                >
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a href="javascript:" @click="addCart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -349,19 +359,41 @@ export default {
     ImageList,
     Zoom,
   },
+  data() {
+    return {
+      skuNum: 1,
+    };
+  },
   computed: {
     ...mapGetters(["categoryView", "skuInfo", "spuSaleAttrList"]),
     skuImageList() {
       return this.skuInfo.skuImageList || [];
     },
   },
-  methods:{
-    changeActive(attrItem,arr){
-      arr.forEach( item => {
-        item.isChecked = '0'
+  methods: {
+    // 改变属性高亮
+    changeActive(attrItem, arr) {
+      arr.forEach((item) => {
+        item.isChecked = "0";
       });
-      attrItem.isChecked = '1'
-    }
+      attrItem.isChecked = "1";
+    },
+    // 改变输入数量
+    changeSkuNum(event) {
+      let value = event.target.value * 1;
+      if (isNaN(value) || value < 1) {
+        this.skuNum = 1;
+      } else {
+        this.skuNum = parseInt(value);
+      }
+    },
+    // 加入购物车
+    addCart() {
+      this.$store.dispatch("addOrUpdataCart", {
+        skuId: this.$route.params.skuId,
+        skuNum: this.skuNum,
+      });
+    },
   },
   mounted() {
     this.$store.dispatch("getDetail", this.$route.params.skuId);

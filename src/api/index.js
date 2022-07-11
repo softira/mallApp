@@ -33,3 +33,9 @@ export const reqDetailList = (skuId) => requests({
   url: `/item/${skuId}`,
   method: 'get',
 })
+
+// 传输购物车数据
+export const reqAddOrUpdataCart = (skuId,skuNum) => requests({
+  url: `/cart/addToCart/${skuId}/${skuNum}`,
+  method: 'post'
+})
